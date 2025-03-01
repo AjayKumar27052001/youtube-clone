@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "fir-fecf3",
+    "myyoutube": "fir-fecf3"
+  },
+  "targets": {
+    "fir-fecf3": {
+      "hosting": {
+        "myyoutube": [
+          "ajay-d5187ytube"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}
