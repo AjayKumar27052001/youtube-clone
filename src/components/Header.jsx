@@ -3,48 +3,41 @@ import { useState, useEffect } from "react";
 import useFetch from "../utils/useFetch";
 import { searchSuggestionsApi } from "../utils/constants";
 import { useSearch } from "../contexts/searchContext";
+import { api_Url } from "../utils/constants";
+import { searchVideoApi } from "../utils/constants";
 
 const Header = () => {
   const menu_Image =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTdqgxY6HhT6trjf7ASBTrRnLnNLXnlT8WYw&s";
 
   const [searchSuggestions, setSearchSuggestions] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { videodata, setVideoData } = useSearch();
 
-  useEffect(() => {}, []);
+  //note:here we shouldnt use custom useFetch hook,becuase here it doent need to update bodyvideoslist everytime,we just need only clicking button
 
-  const searchHandler = () => {
-    const filteredData = videodata.filter((item) => {
-      const { channelTitle, title } = item?.snippet || {};
-      const titleTrim = title
-        ?.replace(/[^a-zA-Z0-9]/g, "")
-        .trim()
-        .toLowerCase();
-      const channelTitleTrim = channelTitle
-        ?.replace(/[^a-zA-Z0-9]/g, "")
-        .trim()
-        .toLowerCase();
-      const searchvalueTrim = searchValue
-        .replace(/[^a-zA-Z0-9]/g, "")
-        .trim()
-        .toLowerCase();
+  const searchHandler = async () => {
+    const api = !searchValue
+      ? api_Url
+      : `${searchVideoApi}&q=${encodeURIComponent(searchValue)}`;
 
-      return (
-        titleTrim.includes(searchvalueTrim) ||
-        channelTitleTrim.includes(searchvalueTrim)
-      );
-    });
-    console.log("searchValue begor");
-    console.log(filteredData);
-    console.log("searchValue after is " + searchValue);
-    console.log(videodata);
+    try {
+      const response = await fetch(api);
+      console.log(api);
+      if (!response.ok) throw new Error("Error fetching videos");
 
-    setVideoData(filteredData);
+      const res = await response.json();
+      if (res.items) {
+        setVideoData(res.items);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   const searchSuggestionHandler = async (searchValue) => {
-    console.log("searchValue is " + searchValue);
+    // console.log("searchValue is " + searchValue);
     const res = await fetch(searchSuggestionsApi + searchValue);
     const data = await res.json();
 
@@ -88,7 +81,10 @@ const Header = () => {
             placeholder="Search"
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setShowSuggestions(false)}
-            onChange={(e) => setSearchValue(e.target.value)} //e needs to take in fn parameter
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+              if (!e.target.value) searchHandler();
+            }} //e needs to take in fn parameter
           />
           <button
             className=" text-white text-center h-10  px-4 rounded-l-none rounded-full hover:bg-gray-200 focus:outline-none border-2 border-gray-300"

@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-const searchContext = createContext({ videoData: [], setVideoData: () => {} });
+const searchContext = createContext();
 export const useSearch = () => {
   return useContext(searchContext);
 };

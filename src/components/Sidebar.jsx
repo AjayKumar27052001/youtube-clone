@@ -6,11 +6,9 @@ const Sidebar = () => {
   const [theme, setTheme] = useState(true);
   const prime = (val) => {
     const primeValue = findNthPrime(val);
-    console.log("primenumber is calculating" + primeValue);
+
     setPrimeVal(primeValue);
   };
-
-  console.log("Rendering Sidebar"); // Check re-renders
 
   return (
     <div
